@@ -57,6 +57,8 @@ export class MemStorage implements IStorage {
     const task: Task = {
       ...taskData,
       id,
+      status: taskData.status || "pending",
+      priority: taskData.priority || "P3",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
