@@ -13,7 +13,7 @@ interface Task {
   title: string;
   assignee: string | null;
   dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3';
+  priority: 'P1' | 'P2' | 'P3' | 'P4';
   status: 'pending' | 'completed' | 'overdue';
   createdAt: string;
   updatedAt: string;
@@ -158,9 +158,10 @@ export default function TaskEditModal({ task, onClose, onUpdate }: TaskEditModal
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="P1">P1 - High Priority</SelectItem>
-                <SelectItem value="P2">P2 - Medium Priority</SelectItem>
-                <SelectItem value="P3">P3 - Low Priority</SelectItem>
+                <SelectItem value="P1">P1 - Urgent Priority</SelectItem>
+                <SelectItem value="P2">P2 - High Priority</SelectItem>
+                <SelectItem value="P3">P3 - Medium Priority</SelectItem>
+                <SelectItem value="P4">P4 - Low Priority</SelectItem>
               </SelectContent>
             </Select>
           </div>

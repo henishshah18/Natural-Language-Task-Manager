@@ -45,3 +45,15 @@ export type User = typeof users.$inferSelect;
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
 export type Task = typeof tasks.$inferSelect;
+
+// Client-side task interface with proper typing
+export interface ClientTask {
+  id: number;
+  title: string;
+  assignee: string | null;
+  dueDate: string | null;
+  priority: 'P1' | 'P2' | 'P3' | 'P4';
+  status: 'pending' | 'completed' | 'overdue';
+  createdAt: string;
+  updatedAt: string;
+}

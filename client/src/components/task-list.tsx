@@ -4,20 +4,10 @@ import { CheckSquare, ArrowUpDown, Calendar, AlertTriangle } from "lucide-react"
 import TaskItem from "./task-item";
 import { useState } from "react";
 import TaskEditModal from "./task-edit-modal";
-
-interface Task {
-  id: number;
-  title: string;
-  assignee: string | null;
-  dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3' | 'P4';
-  status: 'pending' | 'completed' | 'overdue';
-  createdAt: string;
-  updatedAt: string;
-}
+import type { ClientTask } from "@shared/schema";
 
 interface TaskListProps {
-  tasks: Task[];
+  tasks: ClientTask[];
   onTaskUpdate: () => void;
   isLoading: boolean;
 }
@@ -25,10 +15,10 @@ interface TaskListProps {
 type SortOption = 'dueDate' | 'priority' | 'created';
 
 export default function TaskList({ tasks, onTaskUpdate, isLoading }: TaskListProps) {
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<ClientTask | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('dueDate');
 
-  const sortTasks = (tasks: Task[], sortBy: SortOption) => {
+  const sortTasks = (tasks: ClientTask[], sortBy: SortOption) => {
     return [...tasks].sort((a, b) => {
       switch (sortBy) {
         case 'dueDate':
@@ -37,7 +27,7 @@ export default function TaskList({ tasks, onTaskUpdate, isLoading }: TaskListPro
           if (!b.dueDate) return -1;
           return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
         case 'priority':
-          const priorityOrder = { P1: 1, P2: 2, P3: 3, P4: 4 };
+          const priorityOrder: Record<ClientTask['priority'], number> = { P1: 1, P2: 2, P3: 3, P4: 4 };
           return priorityOrder[a.priority] - priorityOrder[b.priority];
         case 'created':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();

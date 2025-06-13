@@ -5,20 +5,10 @@ import { Edit, Trash2, User, Calendar } from "lucide-react";
 import { authManager } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-
-interface Task {
-  id: number;
-  title: string;
-  assignee: string | null;
-  dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3' | 'P4';
-  status: 'pending' | 'completed' | 'overdue';
-  createdAt: string;
-  updatedAt: string;
-}
+import type { ClientTask } from "@shared/schema";
 
 interface TaskItemProps {
-  task: Task;
+  task: ClientTask;
   onEdit: () => void;
   onUpdate: () => void;
 }
@@ -41,7 +31,7 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
     
     try {
       const date = new Date(dueDate);
-      return format(date, 'dd-MM-yyyy, hh:mm a');
+      return format(date, 'dd-MM-yyyy, HH:mm');
     } catch {
       return null;
     }
