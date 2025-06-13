@@ -154,11 +154,23 @@ When parsing dates and times:
   * "tomorrow" = current date + 1 day
   * Days of the week (e.g., "Monday") = next occurrence of that day
 - For times:
+  * "3:00pm" = 15:00
+  * "3:30pm" = 15:30
+  * "3pm" = 15:00
+  * "6pm" = 18:00
   * "5pm" = 17:00
   * "10am" = 10:00
+  * "2:30pm" = 14:30
   * If no time is specified, use 12:00 (noon)
-- Always return dates in ISO format (e.g., "2024-03-20T17:00:00Z")
+- Always return dates in ISO format with UTC timezone (e.g., "2024-03-20T15:00:00Z")
 - If no time is mentioned, use 12:00 (noon) as default
+- IMPORTANT: Do not modify the time - use exactly what is specified in the input
+
+Examples:
+- "Call client by 3:00pm tomorrow" -> dueDate: "2024-03-21T15:00:00Z"
+- "Meeting at 2:30pm tomorrow" -> dueDate: "2024-03-21T14:30:00Z"
+- "Submit report by 10am Monday" -> dueDate: "2024-03-25T10:00:00Z"
+- "Review code by 6pm today" -> dueDate: "2024-03-20T18:00:00Z"
 
 Respond with JSON in this exact format: { "title": "string", "assignee": "string or null", "dueDate": "ISO string", "priority": "P1, P2, P3, or P4" }. 
 
