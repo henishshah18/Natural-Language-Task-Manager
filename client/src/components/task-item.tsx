@@ -31,7 +31,7 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
     
     try {
       const date = new Date(dueDate);
-      return format(date, 'dd-MM-yyyy, hh:mm a');
+      return format(date, 'MMM dd, yyyy hh:mm a');
     } catch {
       return null;
     }

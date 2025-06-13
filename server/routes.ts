@@ -144,19 +144,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
               role: "system",
               content: `You are a task parsing assistant. Parse the natural language task input and extract structured information. 
 
-IMPORTANT: Today's date is ${new Date().toISOString().split('T')[0]} (YYYY-MM-DD format). The current year is 2025.
+IMPORTANT: Today's date is ${new Date().toISOString().split('T')[0]} (YYYY-MM-DD format).
 
-When parsing dates:
-- If a specific date is mentioned (e.g., "June 20"), use 2025 as the year
-- If only a day of the week is mentioned (e.g., "Monday"), find the next occurrence of that day
-- If "today" is mentioned, use today's date
-- If "tomorrow" is mentioned, use tomorrow's date
-- Always return dates in ISO format with the correct year (2025)
+When parsing dates and times:
+- Due date is MANDATORY for all tasks
+- Use the current year for all dates
+- For relative dates:
+  * "today" = current date
+  * "tomorrow" = current date + 1 day
+  * Days of the week (e.g., "Monday") = next occurrence of that day
+- For times:
+  * "5pm" = 17:00
+  * "10am" = 10:00
+  * If no time is specified, use 12:00 (noon)
+- Always return dates in ISO format (e.g., "2024-03-20T17:00:00Z")
+- If no time is mentioned, use 12:00 (noon) as default
 
-Respond with JSON in this exact format: { "title": "string", "assignee": "string or null", "dueDate": "ISO string or null", "priority": "P1, P2, P3, or P4" }. 
+Respond with JSON in this exact format: { "title": "string", "assignee": "string or null", "dueDate": "ISO string", "priority": "P1, P2, P3, or P4" }. 
 
 Priority levels: P1 (highest/urgent), P2 (high), P3 (medium/default), P4 (low). Default priority is P3.
-If no assignee is mentioned, set to null. If no due date is mentioned, set to null.`
+If no assignee is mentioned, set to null.`
             },
             {
               role: "user",
@@ -180,10 +187,14 @@ If no assignee is mentioned, set to null. If no due date is mentioned, set to nu
       const taskData = {
         title: parsedTask.title || text,
         assignee: parsedTask.assignee || null,
-        dueDate: parsedTask.dueDate ? new Date(parsedTask.dueDate) : null,
+        dueDate: new Date(parsedTask.dueDate),
         priority: parsedTask.priority || "P3",
         status: "pending",
       };
+
+      if (!taskData.dueDate || isNaN(taskData.dueDate.getTime())) {
+        return res.status(400).json({ message: "Invalid due date" });
+      }
 
       const task = await storage.createTask({
         ...taskData,

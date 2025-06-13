@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { authManager } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import type { ClientTask } from "@shared/schema";
 
 interface TaskEditModalProps {
@@ -21,7 +21,7 @@ export default function TaskEditModal({ task, onClose, onUpdate }: TaskEditModal
     title: task.title,
     assignee: task.assignee || '',
     dueDate: task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '',
-    dueTime: task.dueDate ? format(new Date(task.dueDate), 'HH:mm') : '',
+    dueTime: task.dueDate ? format(new Date(task.dueDate), 'hh:mm a') : '12:00 PM',
     priority: task.priority,
   });
   const { toast } = useToast();
@@ -31,13 +31,12 @@ export default function TaskEditModal({ task, onClose, onUpdate }: TaskEditModal
     setIsLoading(true);
 
     try {
-      let dueDate: Date | null = null;
-      if (formData.dueDate) {
-        const dateTimeString = formData.dueTime 
-          ? `${formData.dueDate}T${formData.dueTime}:00`
-          : `${formData.dueDate}T12:00:00`;
-        dueDate = new Date(dateTimeString);
+      if (!formData.dueDate) {
+        throw new Error('Due date is required');
       }
+
+      const dateTimeString = `${formData.dueDate}T${format(parse(formData.dueTime, 'hh:mm a', new Date()), 'HH:mm')}:00`;
+      const dueDate = new Date(dateTimeString);
 
       const response = await fetch(`/api/tasks/${task.id}`, {
         method: 'PUT',
@@ -48,7 +47,7 @@ export default function TaskEditModal({ task, onClose, onUpdate }: TaskEditModal
         body: JSON.stringify({
           title: formData.title,
           assignee: formData.assignee || null,
-          dueDate: dueDate?.toISOString() || null,
+          dueDate: dueDate.toISOString(),
           priority: formData.priority,
         }),
       });
@@ -116,13 +115,14 @@ export default function TaskEditModal({ task, onClose, onUpdate }: TaskEditModal
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
-                Due Date
+                Due Date <span className="text-red-500">*</span>
               </Label>
               <Input
                 type="date"
                 value={formData.dueDate}
                 onChange={(e) => handleInputChange('dueDate', e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                required
               />
             </div>
 

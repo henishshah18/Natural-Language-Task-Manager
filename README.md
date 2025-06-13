@@ -1,4 +1,4 @@
-# Natural Language Task Manager
+Made changes to parsing dates prompt and time format# Natural Language Task Manager
 
 A modern web application that helps users manage their tasks using natural language processing. Built with React, TypeScript, and Express.js, this application provides an intuitive interface for task management with AI-powered natural language understanding.
 
