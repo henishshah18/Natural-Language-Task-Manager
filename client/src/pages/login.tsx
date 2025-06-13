@@ -47,7 +47,8 @@ export default function LoginPage() {
         });
       }
 
-      setLocation("/");
+      // Force a page reload to trigger authentication check
+      window.location.href = "/";
     } catch (error: any) {
       toast({
         variant: "destructive",
