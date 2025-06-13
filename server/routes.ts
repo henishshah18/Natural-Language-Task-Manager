@@ -142,7 +142,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           messages: [
             {
               role: "system",
-              content: "You are a task parsing assistant. Parse the natural language task input and extract structured information. Respond with JSON in this exact format: { \"title\": \"string\", \"assignee\": \"string or null\", \"dueDate\": \"ISO string or null\", \"priority\": \"P1, P2, P3, or P4\" }. Default priority is P3. Priority levels: P1 (highest/urgent), P2 (high), P3 (medium/default), P4 (low). If no assignee is mentioned, set to null. If no due date is mentioned, set to null. For dates, interpret them in the user's local timezone and return as ISO string."
+              content: `You are a task parsing assistant. Parse the natural language task input and extract structured information. 
+
+IMPORTANT: Today's date is ${new Date().toISOString().split('T')[0]} (YYYY-MM-DD format). The current year is 2025.
+
+When parsing dates:
+- If a specific date is mentioned (e.g., "June 20"), use 2025 as the year
+- If only a day of the week is mentioned (e.g., "Monday"), find the next occurrence of that day
+- If "today" is mentioned, use today's date
+- If "tomorrow" is mentioned, use tomorrow's date
+- Always return dates in ISO format with the correct year (2025)
+
+Respond with JSON in this exact format: { "title": "string", "assignee": "string or null", "dueDate": "ISO string or null", "priority": "P1, P2, P3, or P4" }. 
+
+Priority levels: P1 (highest/urgent), P2 (high), P3 (medium/default), P4 (low). Default priority is P3.
+If no assignee is mentioned, set to null. If no due date is mentioned, set to null.`
             },
             {
               role: "user",
