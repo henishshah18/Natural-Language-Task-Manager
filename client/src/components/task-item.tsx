@@ -31,7 +31,7 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
     
     try {
       const date = new Date(dueDate);
-      return format(date, 'dd-MM-yyyy, HH:mm');
+      return format(date, 'dd-MM-yyyy, hh:mm a');
     } catch {
       return null;
     }
@@ -101,7 +101,7 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
   return (
     <div className={`p-4 hover:bg-gray-50 transition-colors group border-b border-gray-100 last:border-b-0 ${isCompleted ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
-        {/* Left Side: Checkbox + Title + Assignee */}
+        {/* Left Side: Checkbox + Title + Priority + Assignee */}
         <div className="flex items-center space-x-4 flex-1 min-w-0">
           {/* Checkbox */}
           <div>
@@ -114,9 +114,15 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
           
           {/* Task Content */}
           <div className="flex-1 min-w-0">
-            <h4 className={`text-base font-medium text-gray-900 mb-1 ${isCompleted ? 'line-through' : ''}`}>
-              {task.title}
-            </h4>
+            <div className="flex items-center space-x-3 mb-1">
+              <h4 className={`text-base font-medium text-gray-900 ${isCompleted ? 'line-through' : ''}`}>
+                {task.title}
+              </h4>
+              
+              <Badge className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
+                {task.priority}
+              </Badge>
+            </div>
             
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <User size={14} />
@@ -125,7 +131,7 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
           </div>
         </div>
 
-        {/* Right Side: Due Date, Time & Priority */}
+        {/* Extreme Right: Due Date & Action Buttons */}
         <div className="flex items-center space-x-4 ml-4">
           {dueDateFormatted && (
             <div className="text-right">
@@ -135,10 +141,6 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
               </div>
             </div>
           )}
-          
-          <Badge className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-            {task.priority}
-          </Badge>
           
           {/* Action Buttons */}
           <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">

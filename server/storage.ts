@@ -1,4 +1,6 @@
 import { users, tasks, type User, type InsertUser, type Task, type InsertTask, type UpdateTask } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -12,6 +14,74 @@ export interface IStorage {
   updateTask(id: number, userId: number, updates: UpdateTask): Promise<Task | undefined>;
   deleteTask(id: number, userId: number): Promise<boolean>;
   getTask(id: number, userId: number): Promise<Task | undefined>;
+}
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getTasksByUserId(userId: number): Promise<Task[]> {
+    return await db.select().from(tasks).where(eq(tasks.userId, userId));
+  }
+
+  async createTask(taskData: InsertTask & { userId: number }): Promise<Task> {
+    const [task] = await db
+      .insert(tasks)
+      .values({
+        ...taskData,
+        status: taskData.status || "pending",
+        priority: taskData.priority || "P3",
+        assignee: taskData.assignee || null,
+        dueDate: taskData.dueDate || null,
+      })
+      .returning();
+    return task;
+  }
+
+  async updateTask(id: number, userId: number, updates: UpdateTask): Promise<Task | undefined> {
+    const [updatedTask] = await db
+      .update(tasks)
+      .set(updates)
+      .where(eq(tasks.id, id))
+      .returning();
+    
+    if (!updatedTask || updatedTask.userId !== userId) {
+      return undefined;
+    }
+    
+    return updatedTask;
+  }
+
+  async deleteTask(id: number, userId: number): Promise<boolean> {
+    const task = await this.getTask(id, userId);
+    if (!task) return false;
+    
+    await db.delete(tasks).where(eq(tasks.id, id));
+    return true;
+  }
+
+  async getTask(id: number, userId: number): Promise<Task | undefined> {
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    if (!task || task.userId !== userId) {
+      return undefined;
+    }
+    return task;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -100,4 +170,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
