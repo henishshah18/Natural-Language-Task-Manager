@@ -1,0 +1,61 @@
+Natural Language Task Manager (NLTM)
+---
+## 🧠 Objective
+Build a web application that allows users to input tasks in natural language (e.g., “Finish landing page Aman by 11pm 20th June”), which are parsed and organized into structured, user-specific to-do items. Each user has access only to their own data.
+---
+## 🎯 Target Users
+- Individual professionals or freelancers who want a smart, secure, and simple way to manage tasks using natural language.
+---
+## 🧩 Core Features (MVP)
+### 1. ✅ User Authentication
+- Simple login/signup system
+- No OAuth: only username + password
+- JWT-based authentication
+- Users can:
+  - Sign up with username/password
+  - Log in and receive a token
+  - Only access their own tasks using token
+  - Logout (token deleted from client)
+---
+### 2. 🧠 Natural Language Task Input
+- Input box where the user can enter tasks like:
+  - "Call client Rajeev tomorrow 5pm P2"
+  - "Submit report to Priya by 10am Monday"
+---
+### 3. 📥 Task Parsing
+- Use OpenAI or Gemini API with function calling or structured prompt
+- Extract fields:
+  - Task Title
+  - Assignee
+  - Due Date & Time
+  - Priority (default: P3)
+---
+### 4. 📋 Task List UI
+- Display user's tasks in a structured list or board
+- Task fields:
+  - Task | Assignee | Due Date | Priority | Actions
+---
+### 5. ✏️ Task Editing
+- Allow inline or modal-based editing
+- Reflect updates in backend storage
+---
+### 6. 💾 Data Storage
+- Use Supabase, Replit DB with JWT, or custom Express + SQLite/JSON backend
+- Task data is scoped to logged-in user only
+---
+### 7. 🕒 Timezone Handling
+- Automatically detect and use user’s local timezone
+---
+## 🚫 Out of Scope (MVP)
+- OAuth login (Google, GitHub)
+- Multi-user task sharing or collaboration
+- Notifications and reminders
+- Recurring tasks
+- Mobile app
+---
+## 🛠 Tech Stack
+| Layer           | Tooling                      |
+|----------------|------------------------------|
+| Frontend        | React, TailwindCSS, Replit   |
+| Parsing API     | OpenAI API / Gemini API      |
+| Auth & Backend  | Node.js (Express) + JWT      |
