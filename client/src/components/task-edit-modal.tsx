@@ -7,20 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { authManager } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-
-interface Task {
-  id: number;
-  title: string;
-  assignee: string | null;
-  dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3' | 'P4';
-  status: 'pending' | 'completed' | 'overdue';
-  createdAt: string;
-  updatedAt: string;
-}
+import type { ClientTask } from "@shared/schema";
 
 interface TaskEditModalProps {
-  task: Task;
+  task: ClientTask;
   onClose: () => void;
   onUpdate: () => void;
 }

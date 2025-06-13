@@ -6,23 +6,13 @@ import { useLocation } from "wouter";
 import TaskInput from "@/components/task-input";
 import TaskList from "@/components/task-list";
 import { useState } from "react";
-
-interface Task {
-  id: number;
-  title: string;
-  assignee: string | null;
-  dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3' | 'P4';
-  status: 'pending' | 'completed' | 'overdue';
-  createdAt: string;
-  updatedAt: string;
-}
+import type { ClientTask } from "@shared/schema";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [filters, setFilters] = useState({ priority: '', status: '' });
 
-  const { data: tasks = [], refetch, isLoading } = useQuery<Task[]>({
+  const { data: tasks = [], refetch, isLoading } = useQuery<ClientTask[]>({
     queryKey: ['/api/tasks'],
     queryFn: async () => {
       const response = await fetch('/api/tasks', {
