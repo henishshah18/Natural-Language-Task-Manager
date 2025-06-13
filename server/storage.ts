@@ -59,6 +59,7 @@ export class MemStorage implements IStorage {
       id,
       status: taskData.status || "pending",
       priority: taskData.priority || "P3",
+      assignee: taskData.assignee || null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

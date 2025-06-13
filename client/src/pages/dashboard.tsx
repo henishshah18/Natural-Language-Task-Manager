@@ -12,7 +12,7 @@ interface Task {
   title: string;
   assignee: string | null;
   dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3';
+  priority: 'P1' | 'P2' | 'P3' | 'P4';
   status: 'pending' | 'completed' | 'overdue';
   createdAt: string;
   updatedAt: string;
@@ -95,9 +95,10 @@ export default function Dashboard() {
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:border-transparent"
               >
                 <option value="">All Priorities</option>
-                <option value="P1">P1 - High</option>
-                <option value="P2">P2 - Medium</option>
-                <option value="P3">P3 - Low</option>
+                <option value="P1">P1 - Urgent</option>
+                <option value="P2">P2 - High</option>
+                <option value="P3">P3 - Medium</option>
+                <option value="P4">P4 - Low</option>
               </select>
 
               <select

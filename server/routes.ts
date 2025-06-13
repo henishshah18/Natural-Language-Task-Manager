@@ -142,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           messages: [
             {
               role: "system",
-              content: "You are a task parsing assistant. Parse the natural language task input and extract structured information. Respond with JSON in this exact format: { \"title\": \"string\", \"assignee\": \"string or null\", \"dueDate\": \"ISO string or null\", \"priority\": \"P1, P2, or P3\" }. Default priority is P3. If no assignee is mentioned, set to null. If no due date is mentioned, set to null."
+              content: "You are a task parsing assistant. Parse the natural language task input and extract structured information. Respond with JSON in this exact format: { \"title\": \"string\", \"assignee\": \"string or null\", \"dueDate\": \"ISO string or null\", \"priority\": \"P1, P2, P3, or P4\" }. Default priority is P3. Priority levels: P1 (highest/urgent), P2 (high), P3 (medium/default), P4 (low). If no assignee is mentioned, set to null. If no due date is mentioned, set to null. For dates, interpret them in the user's local timezone and return as ISO string."
             },
             {
               role: "user",

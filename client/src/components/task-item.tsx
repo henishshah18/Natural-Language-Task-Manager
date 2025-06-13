@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Check, Trash2, User, Calendar, Clock, CheckCircle, Undo } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Edit, Trash2, User, Calendar } from "lucide-react";
 import { authManager } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -10,7 +11,7 @@ interface Task {
   title: string;
   assignee: string | null;
   dueDate: string | null;
-  priority: 'P1' | 'P2' | 'P3';
+  priority: 'P1' | 'P2' | 'P3' | 'P4';
   status: 'pending' | 'completed' | 'overdue';
   createdAt: string;
   updatedAt: string;
@@ -27,10 +28,11 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'P1': return 'bg-red-100 text-red-800';
-      case 'P2': return 'bg-amber-100 text-amber-800';
-      case 'P3': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'P1': return 'bg-red-500 text-white'; // Urgent - Red
+      case 'P2': return 'bg-orange-500 text-white'; // High - Orange  
+      case 'P3': return 'bg-yellow-500 text-white'; // Medium - Yellow
+      case 'P4': return 'bg-green-500 text-white'; // Low - Green
+      default: return 'bg-gray-500 text-white';
     }
   };
 
@@ -39,23 +41,7 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
     
     try {
       const date = new Date(dueDate);
-      const now = new Date();
-      const diffInHours = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60));
-      
-      let timeText = '';
-      if (diffInHours < 0) {
-        timeText = `${Math.abs(diffInHours)} hours ago`;
-      } else if (diffInHours < 24) {
-        timeText = `in ${diffInHours} hours`;
-      } else {
-        const diffInDays = Math.ceil(diffInHours / 24);
-        timeText = `in ${diffInDays} days`;
-      }
-      
-      return {
-        formatted: format(date, 'EEEE, h:mm a'),
-        relative: timeText,
-      };
+      return format(date, 'dd-MM-yyyy, hh:mm a');
     } catch {
       return null;
     }
@@ -119,49 +105,49 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
     }
   };
 
-  const dueDateInfo = formatDueDate(task.dueDate);
+  const dueDateFormatted = formatDueDate(task.dueDate);
   const isCompleted = task.status === 'completed';
 
   return (
-    <div className={`p-6 hover:bg-gray-50 transition-colors group ${isCompleted ? 'opacity-60' : ''}`}>
-      <div className="flex items-start justify-between">
+    <div className={`p-4 hover:bg-gray-50 transition-colors group border-b border-gray-100 last:border-b-0 ${isCompleted ? 'opacity-60' : ''}`}>
+      <div className="flex items-start space-x-4">
+        {/* Checkbox */}
+        <div className="mt-1">
+          <Checkbox
+            checked={isCompleted}
+            onCheckedChange={toggleComplete}
+            className="h-5 w-5"
+          />
+        </div>
+        
+        {/* Task Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-3 mb-2">
-            <Badge className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-              {task.priority}
-            </Badge>
-            
-            <h4 className={`text-base font-medium text-gray-900 truncate ${isCompleted ? 'line-through' : ''}`}>
+            <h4 className={`text-base font-medium text-gray-900 ${isCompleted ? 'line-through' : ''}`}>
               {task.title}
             </h4>
             
-            {isCompleted && (
-              <CheckCircle className="text-green-500" size={16} />
-            )}
+            <Badge className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
+              {task.priority}
+            </Badge>
           </div>
           
-          <div className="flex items-center space-x-6 text-sm text-gray-500">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
             <div className="flex items-center space-x-1">
               <User size={14} />
-              <span>{task.assignee || 'Self'}</span>
+              <span>Assignee: {task.assignee || 'Self'}</span>
             </div>
             
-            {dueDateInfo && (
-              <>
-                <div className="flex items-center space-x-1">
-                  <Calendar size={14} />
-                  <span>{dueDateInfo.formatted}</span>
-                </div>
-                
-                <div className={`flex items-center space-x-1 ${isCompleted ? 'text-green-600' : ''}`}>
-                  <Clock size={14} />
-                  <span>{isCompleted ? 'Completed' : dueDateInfo.relative}</span>
-                </div>
-              </>
+            {dueDateFormatted && (
+              <div className="flex items-center space-x-1">
+                <Calendar size={14} />
+                <span>Due: {dueDateFormatted}</span>
+              </div>
             )}
           </div>
         </div>
         
+        {/* Action Buttons */}
         <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
             variant="ghost"
@@ -170,15 +156,6 @@ export default function TaskItem({ task, onEdit, onUpdate }: TaskItemProps) {
             className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <Edit size={14} />
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleComplete}
-            className="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            {isCompleted ? <Undo size={14} /> : <Check size={14} />}
           </Button>
           
           <Button
